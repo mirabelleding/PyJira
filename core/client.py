@@ -26,6 +26,7 @@ class JiraClient:
 
         self.session = requests.Session()
         self.session.auth = (username, token)
+        self.session.verify = False
 
         self.session.headers.update({
             "Accept": "application/json",
