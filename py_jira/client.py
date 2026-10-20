@@ -1,11 +1,13 @@
 import os
 from pathlib import Path
+from typing import Any, Self
+
 import requests
 
 from .models import Issue
 
 
-def adf(text):
+def adf(text: str) -> dict[str, Any]:
     return {
         "type": "doc",
         "version": 1,
@@ -21,12 +23,18 @@ def adf(text):
 
 class JiraClient:
 
-    def __init__(self, base_url, username, token):
+    def __init__(
+        self,
+        base_url: str,
+        username: str,
+        token: str,
+        verify: bool | str = True,
+    ) -> None:
         self.base_url = base_url.rstrip("/")
 
         self.session = requests.Session()
         self.session.auth = (username, token)
-        self.session.verify = False
+        self.session.verify = verify
 
         self.session.headers.update({
             "Accept": "application/json",
@@ -34,17 +42,20 @@ class JiraClient:
         })
 
     @classmethod
-    def from_env(cls):
+    def from_env(
+        cls,
+        verify: bool | str = True,
+    ) -> Self:
         secrets_dir = Path(os.environ["JIRA_CONFIG"])
 
         return cls(
             base_url=(secrets_dir / "url").read_text().strip(),
             username=(secrets_dir / "username").read_text().strip(),
             token=(secrets_dir / "token").read_text().strip(),
+            verify=verify,
         )
-    
 
-    def _get(self, key):
+    def _get(self, key: str) -> dict[str, Any]:
         response = self.session.get(
             f"{self.base_url}/rest/api/3/issue/{key}"
         )
@@ -52,12 +63,10 @@ class JiraClient:
         response.raise_for_status()
         return response.json()
 
-
-    def get(self, key):
+    def get(self, key: str) -> Issue:
         return Issue(self, self._get(key))
 
-
-    def search(self, jql):
+    def search(self, jql: str) -> list[Issue]:
         response = self.session.post(
             f"{self.base_url}/rest/api/3/search/jql",
             json={"jql": jql},
@@ -70,15 +79,14 @@ class JiraClient:
             for data in response.json()["issues"]
         ]
 
-
     def create(
         self,
-        project,
-        issue_type,
-        summary,
-        description=None,
-        **fields,
-    ):
+        project: str,
+        issue_type: str,
+        summary: str,
+        description: str | None = None,
+        **fields: Any,
+    ) -> Issue:
         fields = {
             "project": {"key": project},
             "issuetype": {"name": issue_type},
@@ -98,8 +106,7 @@ class JiraClient:
 
         return self.get(response.json()["key"])
 
-
-    def update(self, key, **fields):
+    def update(self, key: str, **fields: Any) -> None:
         if "description" in fields:
             fields["description"] = adf(
                 fields["description"]
@@ -112,8 +119,7 @@ class JiraClient:
 
         response.raise_for_status()
 
-
-    def comment(self, key, text):
+    def comment(self, key: str, text: str) -> None:
         response = self.session.post(
             f"{self.base_url}/rest/api/3/issue/{key}/comment",
             json={"body": adf(text)},
@@ -121,8 +127,7 @@ class JiraClient:
 
         response.raise_for_status()
 
-
-    def transitions(self, key):
+    def transitions(self, key: str) -> list[dict[str, Any]]:
         response = self.session.get(
             f"{self.base_url}/rest/api/3/issue/{key}/transitions"
         )
@@ -130,8 +135,7 @@ class JiraClient:
         response.raise_for_status()
         return response.json()["transitions"]
 
-
-    def transition(self, key, name):
+    def transition(self, key: str, name: str) -> None:
         transitions = self.transitions(key)
 
         transition = next(

@@ -1,3 +1,6 @@
+# PyJira
+
+A lightweight Python client for the Jira REST API, providing an object-oriented interface for issue retrieval, JQL search, creation, updates, comments, and workflow transitions.
 
 ## Setup
 Create a directory containing the Jira connection details:
