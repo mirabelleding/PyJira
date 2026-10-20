@@ -1,3 +1,5 @@
+# PyJira
+A Python interface for programmatic Jira issue management, supporting issue retrieval, creation, modification, and workflow transitions.
 
 ## Setup
 Create a directory containing the Jira connection details:
