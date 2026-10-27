@@ -4,7 +4,7 @@ from typing import Any, Self
 
 import requests
 
-from .models import Issue
+from .issue import Issue
 
 
 def adf(text: str) -> dict[str, Any]:

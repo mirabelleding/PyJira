@@ -2,6 +2,11 @@
 
 A lightweight Python client for the Jira REST API, providing an object-oriented interface for issue retrieval, JQL search, creation, updates, comments, and workflow transitions.
 
+## Installation
+```bash
+pip install git+ssh://git@github.com/mirabelleding/PyJira.git
+```
+
 ## Setup
 Create a directory containing the Jira connection details:
 

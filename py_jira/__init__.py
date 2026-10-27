@@ -1,5 +1,5 @@
 from .client import JiraClient
-from .models import Issue
+from .issue import Issue
 
 
 jira = JiraClient.from_env()

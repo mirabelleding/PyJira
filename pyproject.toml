@@ -3,7 +3,7 @@ requires = ["setuptools>=77"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "py-jira"
+name = "PyJira"
 version = "0.1.0"
 description = "Je ne veux tout simplement plus faire de Jira."
 readme = "README.md"
@@ -14,9 +14,8 @@ authors = [
 ]
 
 dependencies = [
-    "requests",
+    "requests>=2.32,<3.0",
 ]
 
 [tool.setuptools.packages.find]
 where = ["py_jira"]
-
